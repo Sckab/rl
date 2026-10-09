@@ -17,4 +17,8 @@ pub struct Args {
     /// Display one entry per line.
     #[arg(short = '1', long)]
     pub one_line: bool,
+
+    /// Display an icon next to the file name
+    #[arg(short, long)]
+    pub icons: bool,
 }
