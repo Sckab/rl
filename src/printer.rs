@@ -18,7 +18,9 @@ fn pretty_name(path: std::path::PathBuf, icons: bool) -> Result<OsString, std::i
 
 pub fn print(options: crate::cli::Args) -> Result<(), std::io::Error> {
     for item in std::fs::read_dir(options.path)? {
-        let name = pretty_name(item?.path(), options.icons)?;
+        let item = item?;
+
+        let name = pretty_name(item.path(), options.icons)?;
 
         if options.one_line {
             println!("{}", name.display());
