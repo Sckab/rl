@@ -25,7 +25,14 @@ pub fn print(options: crate::cli::Args) -> anyhow::Result<()> {
 
     if options.long {
         table.load_style(NOTHING);
-        table.set_header(vec!["Permissions", "Size", "User", "Group", "Name"]);
+        table.set_header(vec![
+            "Permissions",
+            "Size",
+            "User",
+            "Group",
+            "Last modified time",
+            "Name",
+        ]);
 
         let column = table.column_iter_mut().next().unwrap();
         column.set_padding((0, 1));
@@ -37,26 +44,20 @@ pub fn print(options: crate::cli::Args) -> anyhow::Result<()> {
         let name = pretty_name(item.path(), options.icons)?;
 
         if options.long {
-            let permissions = crate::utility::get_permission_string(item.metadata()?);
-            let size = crate::utility::get_size_formatted(item.path())?;
-            let owner = item
-                .path()
-                .owner()
-                .unwrap()
-                .name()?
-                .unwrap_or(String::from("Unkown"));
-            let group = item
-                .path()
-                .group()
-                .unwrap()
-                .name()?
-                .unwrap_or(String::from("Unkown"));
+            let path = item.path();
+            let metadata = item.metadata()?;
+
+            let permissions = crate::utility::get_permission_string(metadata.clone());
+            let size = crate::utility::get_size_formatted(path.clone())?;
+            let owner = path.owner()?.name()?.unwrap_or(String::from("Unkown"));
+            let group = path.group()?.name()?.unwrap_or(String::from("Unkown"));
 
             table.add_row(vec![
                 Cell::new(permissions),
                 Cell::new(format!("{} {}", size.0, size.1)).set_alignment(CellAlignment::Right),
                 Cell::new(owner),
                 Cell::new(group),
+                Cell::new(crate::utility::get_time(metadata.clone())?),
                 Cell::new(name.to_string_lossy().into_owned()),
             ]);
         } else if options.one_line {

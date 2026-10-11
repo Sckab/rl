@@ -113,3 +113,13 @@ where
         extensions[i].to_string(),
     ))
 }
+
+pub fn get_time(metadata: Metadata) -> anyhow::Result<String> {
+    let format = time::format_description::parse_owned::<3>(
+        "[day]/[month]/[year] [hour]:[minute]:[second]",
+    )?;
+
+    let time = metadata.modified()?;
+
+    Ok(time::OffsetDateTime::from(time).format(&format)?)
+}
