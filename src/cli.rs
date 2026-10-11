@@ -21,4 +21,8 @@ pub struct Args {
     /// Display an icon next to the file name
     #[arg(short, long)]
     pub icons: bool,
+
+    /// Display additional metadata about a file or directory
+    #[arg(short, long)]
+    pub long: bool,
 }
